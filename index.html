@@ -54,6 +54,31 @@
             animation: pulse-border 2s infinite;
         }
 
+        /* 顶部海水蓝玻璃栏：静态渐变与磨砂质感 */
+        @keyframes ocean-soft-wave {
+            0% { background-position: 0% 50%; filter: saturate(110%) brightness(100%); }
+            50% { background-position: 50% 51%; filter: saturate(118%) brightness(103%); }
+            100% { background-position: 100% 49%; filter: saturate(110%) brightness(100%); }
+        }
+        .ocean-header {
+            position: relative;
+            isolation: isolate;
+            background-size: 115% 100% !important;
+            animation: ocean-soft-wave 14s ease-in-out infinite alternate;
+        }
+        .ocean-header .install-glass {
+            background: linear-gradient(135deg, rgba(125, 226, 240, 0.34), rgba(12, 117, 157, 0.42));
+            border: 1px solid rgba(255, 255, 255, 0.34);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 10px rgba(2, 70, 95, 0.18);
+        }
+        .ocean-header .install-glass:hover {
+            background: linear-gradient(135deg, rgba(151, 236, 246, 0.44), rgba(15, 135, 173, 0.52));
+        }
+        .mode-active {
+            background: linear-gradient(115deg, #167b99 0%, #18a0b4 48%, #39bdc0 100%) !important;
+            color: #ffffff !important;
+        }
+
         /* 表格中内容高度绝对居中的覆盖样式 */
         .valign-middle-cell {
             vertical-align: middle !important;
@@ -83,19 +108,69 @@
             font-weight: 400 !important; /* 强制统一为常规字重 */
             font-style: normal !important;
         }
+
+        /* 接送机预览表格：文字在上下横线之间垂直居中 */
+        #transferPreviewPanel table th,
+        #transferPreviewPanel table td {
+            vertical-align: middle !important;
+            padding-top: 14px !important;
+            padding-bottom: 14px !important;
+            line-height: 1.35 !important;
+        }
+
+        /* 接送机预览表格左侧字段列使用白色背景 */
+        #transferPreviewPanel table th {
+            background-color: #ffffff !important;
+        }
+
+        /* 接送机中日期与时间属于重要信息，统一使用红色强调 */
+        #transferModePanel .transfer-important-label {
+            color: #dc2626 !important;
+        }
+        #transferModePanel .transfer-important-value {
+            color: #dc2626 !important;
+            caret-color: #dc2626;
+        }
+        #transferPreviewPanel #transferDocFlight {
+            color: #dc2626 !important;
+            font-weight: 700;
+        }
+        #transferPreviewPanel #transferDocDate,
+        #transferPreviewPanel #transferDocDuration,
+        #transferPreviewPanel #transferDocStartTime,
+        #transferPreviewPanel #transferDocEndTime,
+        #transferPreviewPanel #transferDocTime,
+        #transferPreviewPanel #transferDocDate + *,
+        #transferPreviewPanel #transferDocDuration + *,
+        #transferPreviewPanel #transferDocStartTime + *,
+        #transferPreviewPanel #transferDocEndTime + *,
+        #transferPreviewPanel #transferDocTime + * {
+            color: #dc2626 !important;
+            font-weight: 700;
+        }
+        #transferPreviewPanel #transferDocDateRow th,
+        #transferPreviewPanel #transferDocDurationRow th,
+        #transferPreviewPanel #transferDocCharterStartRow th,
+        #transferPreviewPanel #transferDocCharterEndRow th,
+        #transferPreviewPanel #transferDocTimeRow th {
+            color: #dc2626 !important;
+        }
+        #transferPreviewPanel #transferDocFlightRow th {
+            color: #dc2626 !important;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col pb-10">
 
     <!-- App 顶栏导航 -->
-    <header class="bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md sticky top-0 z-30 px-4 py-4 flex items-center justify-between">
+    <header class="ocean-header text-white sticky top-0 z-30 px-4 py-4 flex items-center justify-between" style="background: linear-gradient(115deg, rgba(8, 92, 125, 0.96) 0%, rgba(10, 145, 170, 0.92) 48%, rgba(27, 174, 181, 0.9) 100%); backdrop-filter: blur(14px) saturate(135%); -webkit-backdrop-filter: blur(14px) saturate(135%); border-bottom: 1px solid rgba(255, 255, 255, 0.28); box-shadow: 0 5px 18px rgba(3, 105, 126, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.2);">
         <div class="flex items-center space-x-2">
-            <i data-lucide="crown" class="w-5.5 h-5.5 text-amber-300"></i>
+            <i data-lucide="crown" class="w-5.5 h-5.5 text-white"></i>
             <span class="font-bold text-sm tracking-wide">皇家旅行预订单录入系统</span>
         </div>
         <div class="flex items-center space-x-1.5">
             <!-- 顶部安装按钮，改为显眼的橙色渐变 -->
-            <button id="btnShowInstallHelp" class="text-xs bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 px-3 py-1.5 rounded-xl shadow-sm transition-all flex items-center space-x-1 font-semibold">
+            <button id="btnShowInstallHelp" class="install-glass text-xs text-white px-3 py-1.5 rounded-xl shadow-sm transition-all flex items-center space-x-1 font-semibold">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span>Install 安装</span>
             </button>
@@ -103,9 +178,17 @@
     </header>
 
     <main class="max-w-md mx-auto w-full px-4 pt-4 flex-grow flex flex-col space-y-4">
+
+        <!-- 业务模式切换：位于顶部导航栏下方、录入区域上方 -->
+        <div class="w-full flex justify-center">
+            <div class="w-full flex items-center space-x-1 bg-white/80 border border-gray-200 rounded-xl p-1 shadow-sm">
+                <button type="button" id="btnBookingMode" class="mode-active flex-1 text-xs text-white px-4 py-2 rounded-lg shadow-sm font-semibold text-center transition-all">预订单</button>
+                <button type="button" id="btnTransferMode" class="flex-1 text-xs text-gray-600 hover:bg-gray-100 px-4 py-2 rounded-lg font-semibold text-center transition-all">接送机</button>
+            </div>
+        </div>
         
-        <!-- 表单录入区域 -->
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 space-y-4">
+        <!-- 预订单表单录入区域 -->
+        <div id="bookingModePanel" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 space-y-4">
 
             <!-- 基本服务 -->
             <div class="space-y-3">
@@ -114,7 +197,7 @@
                     <input type="text" id="inputCompanyName" value="บริษัทเดอะรอยัลทราเวลจำกัด" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 mb-1">Service Provider 服务公司</label>
                         <input type="text" id="inputService" value="" placeholder="选填，默认为空" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
@@ -215,8 +298,181 @@
             </div>
         </div>
 
-        <!-- 确认单预览区域 -->
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 space-y-3">
+        <!-- 接送机表单录入区域 -->
+        <div id="transferModePanel" class="hidden bg-white rounded-3xl shadow-sm border border-gray-100 p-5 space-y-4">
+            <div class="flex items-center space-x-1.5 border-b border-gray-100 pb-3">
+                <i data-lucide="plane" class="w-4 h-4 text-emerald-600"></i>
+                <h2 class="font-bold text-gray-700 text-sm">接送机 Airport Transfer</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="col-span-2">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">类型 ประเภท</label>
+                    <select id="transferType" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold bg-white">
+                        <option value="接机 Airport Pickup">接机 Airport Pickup</option>
+                        <option value="送机 Airport Drop-off">送机 Airport Drop-off</option>
+                        <option value="点对点用车 Point-to-point">点对点用车 Point-to-point</option>
+                        <option value="包车 Charter">包车 Charter</option>
+                    </select>
+                </div>
+                <div class="col-span-2 order-2">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">车型 ขนาดรถ</label>
+                    <select id="transferVehicle" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold bg-white">
+                        <option value="Car 5 Seats / 5座车">Car 5 Seats / 5座车</option>
+                        <option value="Car 7 Seats / 7座车">Car 7 Seats / 7座车</option>
+                        <option value="Van 8-10 Seats / 8-10座车">Van 8-10 Seats / 8-10座车</option>
+                        <option value="custom">手动输入</option>
+                    </select>
+                    <input type="text" id="transferVehicleCustom" placeholder="请输入车型" class="hidden w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div id="transferAirportField" class="col-span-2 order-1">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">机场 Airport</label>
+                    <select id="transferAirport" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold bg-white">
+                        <option value="Suvarnabhumi Airport (Bangkok) / 素万那普机场（曼谷）">Suvarnabhumi Airport (Bangkok) / 素万那普机场（曼谷）</option>
+                        <option value="Don Mueang Airport (Bangkok) / 廊曼机场（曼谷）">Don Mueang Airport (Bangkok) / 廊曼机场（曼谷）</option>
+                        <option value="Phuket International Airport / 普吉国际机场">Phuket International Airport / 普吉国际机场</option>
+                        <option value="Chiang Mai International Airport / 清迈国际机场">Chiang Mai International Airport / 清迈国际机场</option>
+                        <option value="Pattaya International Airport / 芭提雅国际机场">Pattaya International Airport / 芭提雅国际机场</option>
+                        <option value="Krabi International Airport / 甲米国际机场">Krabi International Airport / 甲米国际机场</option>
+                        <option value="Samui International Airport / 苏梅岛国际机场">Samui International Airport / 苏梅岛国际机场</option>
+                    </select>
+                </div>
+                <div class="col-span-2 order-3">
+                    <label class="transfer-important-label block text-xs font-semibold text-gray-500 mb-1">日期 วันที่</label>
+                    <input type="date" id="transferDate" class="transfer-important-value w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold">
+                </div>
+                <div id="charterTimeFields" class="hidden col-span-2 order-4 grid grid-cols-2 gap-3">
+                    <div class="col-span-2">
+                        <label class="transfer-important-label block text-xs font-semibold text-gray-500 mb-1">包车时长 Charter Duration</label>
+                        <select id="transferDuration" class="transfer-important-value w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold bg-white">
+                            <option value="4">4小时 / 4 Hours</option>
+                            <option value="6">6小时 / 6 Hours</option>
+                            <option value="8">8小时 / 8 Hours</option>
+                            <option value="10">10小时 / 10 Hours</option>
+                            <option value="12">12小时 / 12 Hours</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="transfer-important-label block text-xs font-semibold text-gray-500 mb-1">开始时间 เวลาเริ่มต้น</label>
+                        <input type="time" id="transferStartTime" class="transfer-important-value w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="transfer-important-label block text-xs font-semibold text-gray-500 mb-1">结束时间 เวลาสิ้นสุด</label>
+                        <input type="time" id="transferEndTime" class="transfer-important-value w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">路线 เส้นทาง</label>
+                        <input type="text" id="transferRoute" placeholder="请输入包车路线" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                    </div>
+                </div>
+                <div id="transferFlightField" class="order-5">
+                    <label class="transfer-important-label block text-xs font-semibold text-gray-500 mb-1">航班号 หมายเลขเที่ยวบิน</label>
+                    <input type="text" id="transferFlight" placeholder="请输入航班号 / กรุณากรอกหมายเลขเที่ยวบิน" class="transfer-important-value w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div id="transferTimeField" class="order-6">
+                    <label class="transfer-important-label block text-xs font-semibold text-gray-500 mb-1">时间 เวลา</label>
+                    <input type="time" id="transferTime" class="transfer-important-value w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">姓名 ชื่อ</label>
+                <input type="text" id="transferName" placeholder="请输入姓名" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold uppercase select-text">
+                </div>
+                <div>
+                <label class="block text-xs font-semibold text-gray-500 mb-1">人数 จำนวนคน</label>
+                <input type="number" id="transferPeople" min="1" inputmode="numeric" placeholder="请输入人数" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-bold">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="col-span-2">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">接 รับ</label>
+                    <input type="text" id="transferPickup" placeholder="请输入接车地点" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">送 ส่ง</label>
+                    <input type="text" id="transferDropoff" placeholder="请输入送达地点" class="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- 接送机专用预览区域 -->
+        <div id="transferPreviewPanel" class="hidden bg-white rounded-3xl shadow-sm border border-gray-100 p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                <h2 class="font-bold text-gray-700 text-sm flex items-center space-x-1.5">
+                    <i data-lucide="eye" class="w-4 h-4 text-emerald-600"></i>
+                    <span>接送机预览 Airport Transfer</span>
+                </h2>
+                <span class="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">Transfer Layout</span>
+            </div>
+            <div class="overflow-hidden rounded-xl border-2 border-gray-700">
+                <table class="w-full text-xs" style="border-collapse: collapse;">
+                    <tbody>
+                        <tr><th class="w-2/5 bg-emerald-100 border border-gray-400 px-3 py-2 text-left">类型 ประเภท</th><td id="transferDocType" class="border border-gray-400 px-3 py-2 font-bold">接机 Airport Pickup</td></tr>
+                        <tr id="transferDocDateRow"><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">日期 วันที่</th><td id="transferDocDate" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr id="transferDocAirportRow"><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">机场 Airport</th><td id="transferDocAirport" class="border border-gray-400 px-3 py-2">Suvarnabhumi Airport (Bangkok) / 素万那普机场（曼谷）</td></tr>
+                        <tr id="transferDocDurationRow" class="hidden"><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">包车时长 Charter Duration</th><td id="transferDocDuration" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr id="transferDocCharterStartRow" class="hidden"><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">开始时间 เวลาเริ่มต้น</th><td id="transferDocStartTime" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr id="transferDocCharterEndRow" class="hidden"><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">结束时间 เวลาสิ้นสุด</th><td id="transferDocEndTime" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr id="transferDocRouteRow" class="hidden"><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">路线 เส้นทาง</th><td id="transferDocRoute" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr id="transferDocFlightRow"><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">航班号 หมายเลขเที่ยวบิน</th><td id="transferDocFlight" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr id="transferDocTimeRow"><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">时间 เวลา</th><td id="transferDocTime" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">车型 ขนาดรถ</th><td id="transferDocVehicle" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">姓名 ชื่อ</th><td id="transferDocName" class="border border-gray-400 px-3 py-2 font-bold"></td></tr>
+                        <tr><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">人数 จำนวนคน</th><td id="transferDocPeople" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">接 รับ</th><td id="transferDocPickup" class="border border-gray-400 px-3 py-2"></td></tr>
+                        <tr><th class="bg-emerald-100 border border-gray-400 px-3 py-2 text-left">送 ส่ง</th><td id="transferDocDropoff" class="border border-gray-400 px-3 py-2"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="transferPrecautionsSection" style="display: none; margin-top: 16px; background-color: #fffdf2; border: 1px solid #f3d27a; border-radius: 8px; padding: 14px 16px; color: #374151; font-size: 12px; line-height: 1.7;">
+                <div style="font-size: 15px; font-weight: 700; color: #166534; margin-bottom: 8px;">温馨提示</div>
+                <div><strong>【信息核对】</strong>请仔细核对日期、机场、航班号、时间、姓名、人数、车型以及接送地点。如发现信息有误，请及时联系工作人员。</div>
+                <div><strong>【接机免费等待】</strong>接机服务包含 1 小时免费等待时间。司机会根据航班信息安排接机，请抵达后前往约定地点并保持手机畅通。</div>
+                <div><strong>【航班变更】</strong>如航班延误、取消或更改，请尽快通知工作人员，以便及时调整接送安排。</div>
+                <div><strong>【送机提醒】</strong>送机服务请按照确认单上的时间提前准备。建议国际航班至少提前 3 小时到达机场，国内航班至少提前 2 小时到达机场。</div>
+                <div><strong>【行李提醒】</strong>如有超大行李、婴儿车、轮椅或其他特殊物品，请提前告知，以便确认车型和行李空间。</div>
+                <div><strong>【联系方式与等待】</strong>请保持预留手机号码畅通。司机到达后会尝试联系乘客，请在约定地点等候。</div>
+                <div><strong>【费用说明】</strong>如因乘客迟到、无法联系、未按约定地点等候或临时更改行程而产生额外费用，相关费用可能需要由乘客承担。</div>
+                <div style="margin-top: 12px; background-color: #fff5f5; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 12px; color: #7f1d1d;">
+                    <div style="font-weight: 700; margin-bottom: 4px;">🚨 泰国境外/紧急求助热线电话 (Emergency Contact)</div>
+                    <div><strong>泰国旅游警察 (Tourist Police)：</strong>1155（提供中文服务）</div>
+                    <div><strong>泰国报警电话 (Thai Police)：</strong>191</div>
+                    <div><strong>中国驻泰大使馆海外求助：</strong>02-245-7010</div>
+                </div>
+            </div>
+            <div id="pointToPointPrecautionsSection" style="display: none; margin-top: 16px; background-color: #fffdf2; border: 1px solid #f3d27a; border-radius: 8px; padding: 14px 16px; color: #374151; font-size: 12px; line-height: 1.7;">
+                <div style="font-size: 15px; font-weight: 700; color: #166534; margin-bottom: 8px;">温馨提示</div>
+                <div><strong>【信息核对】</strong>请仔细核对日期、时间、车型、姓名、人数、接送地点和路线。如发现信息错误，请在出发前及时联系工作人员。</div>
+                <div><strong>【等待时间】</strong>点对点用车包含 15 分钟免费等待时间。免费等待时间从确认单约定的出发时间开始计算。超出免费等待时间后，可能产生额外等待费用。</div>
+                <div><strong>【接送地点】</strong>请确认接送地点的完整名称、地址或酒店名称。地点如有变更，请提前联系工作人员。</div>
+                <div><strong>【行程安排】</strong>点对点服务按照确认单上的路线和时间安排。中途增加停靠点、改变路线或延长等待时间，需要提前确认，相关额外费用可能需要由乘客承担。</div>
+                <div><strong>【行李和车型】</strong>请确认行李数量与选择的车型是否匹配。如有超大行李、婴儿车、轮椅或其他特殊物品，请提前告知。</div>
+                <div><strong>【联系方式】</strong>请保持预留手机号码畅通。上车后请系好安全带，并在下车前检查随身物品。</div>
+                <div style="margin-top: 12px; background-color: #fff5f5; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 12px; color: #7f1d1d;">
+                    <div style="font-weight: 700; margin-bottom: 4px;">🚨 泰国境外/紧急求助热线电话 (Emergency Contact)</div>
+                    <div><strong>泰国旅游警察 (Tourist Police)：</strong>1155（提供中文服务）</div>
+                    <div><strong>泰国报警电话 (Thai Police)：</strong>191</div>
+                    <div><strong>中国驻泰大使馆海外求助：</strong>02-245-7010</div>
+                </div>
+            </div>
+            <div id="charterPrecautionsSection" style="display: none; margin-top: 16px; background-color: #fffdf2; border: 1px solid #f3d27a; border-radius: 8px; padding: 14px 16px; color: #374151; font-size: 12px; line-height: 1.7;">
+                <div style="font-size: 15px; font-weight: 700; color: #166534; margin-bottom: 8px;">温馨提示</div>
+                <div><strong>【信息核对】</strong>请仔细核对日期、包车时长、开始时间、结束时间、车型、姓名、人数和路线。如发现信息错误，请及时联系工作人员。</div>
+                <div><strong>【包车时间】</strong>包车服务时间从确认单约定的出发时间开始计算，而不是从车辆到达时间开始计算。请提前到达约定地点，避免影响实际用车时间。</div>
+                <div><strong>【路线安排】</strong>包车服务按照确认单上的路线和时间安排。临时增加停靠点、改变路线或延长用车时间，需要提前确认。</div>
+                <div><strong>【行李和车型】</strong>请确认行李数量与选择的车型是否匹配。如有超大行李、婴儿车、轮椅或其他特殊物品，请提前告知。</div>
+                <div><strong>【联系方式】</strong>请保持预留手机号码畅通。上车后请系好安全带，并在下车前检查随身物品。</div>
+                <div style="margin-top: 12px; background-color: #fff5f5; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 12px; color: #7f1d1d;">
+                    <div style="font-weight: 700; margin-bottom: 4px;">🚨 泰国境外/紧急求助热线电话 (Emergency Contact)</div>
+                    <div><strong>泰国旅游警察 (Tourist Police)：</strong>1155（提供中文服务）</div>
+                    <div><strong>泰国报警电话 (Thai Police)：</strong>191</div>
+                    <div><strong>中国驻泰大使馆海外求助：</strong>02-245-7010</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预订单确认单预览区域 -->
+        <div id="bookingPreviewPanel" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5 space-y-3">
             <div class="flex items-center justify-between border-b border-gray-100 pb-2 space-x-1.5 overflow-hidden">
                 <h2 class="font-bold text-gray-700 text-xs sm:text-sm flex items-center space-x-1.5 shrink truncate">
                     <i data-lucide="eye" class="w-4 h-4 text-emerald-600 shrink-0"></i>
@@ -292,7 +548,7 @@
                                     Pick-up Time 酒店大堂接您的时间
                                 </td>
                                 <td class="valign-middle-cell" style="border: 2.5px solid #4a4a4a; padding-left: 14px; padding-right: 14px;">
-                                    <span id="docPickupTime" style="background-color: #FFF200; border: 1.5px solid rgba(0,0,0,0.35); font-weight: 800; font-size: 22px; padding: 2.5px 12px; display: inline-block; border-radius: 2px;">
+                                    <span id="docPickupTime" style="background-color: #FFF200; border: none; font-weight: 800; font-size: 22px; padding: 2.5px 12px; display: inline-block; border-radius: 2px;">
                                         
                                     </span>
                                 </td>
@@ -524,6 +780,126 @@
         // 初始化 Lucide 视觉组件
         lucide.createIcons();
 
+        // 顶部业务模式切换：预订单保持默认，接送机独立显示录入面板
+        const bookingModePanel = document.getElementById('bookingModePanel');
+        const transferModePanel = document.getElementById('transferModePanel');
+        const bookingPreviewPanel = document.getElementById('bookingPreviewPanel');
+        const transferPreviewPanel = document.getElementById('transferPreviewPanel');
+        const btnBookingMode = document.getElementById('btnBookingMode');
+        const btnTransferMode = document.getElementById('btnTransferMode');
+        const activeModeClass = ['bg-white', 'text-emerald-700', 'shadow-sm'];
+        const inactiveModeClass = ['text-white'];
+
+        function setMode(mode) {
+            const bookingActive = mode === 'booking';
+            bookingModePanel.classList.toggle('hidden', !bookingActive);
+            transferModePanel.classList.toggle('hidden', bookingActive);
+            bookingPreviewPanel.classList.toggle('hidden', !bookingActive);
+            transferPreviewPanel.classList.toggle('hidden', bookingActive);
+            btnBookingMode.classList.toggle('mode-active', bookingActive);
+            btnBookingMode.classList.toggle('text-white', bookingActive);
+            btnBookingMode.classList.toggle('text-gray-600', !bookingActive);
+            btnBookingMode.classList.toggle('shadow-sm', bookingActive);
+            btnTransferMode.classList.toggle('mode-active', !bookingActive);
+            btnTransferMode.classList.toggle('text-white', !bookingActive);
+            btnTransferMode.classList.toggle('text-gray-600', bookingActive);
+            btnTransferMode.classList.toggle('shadow-sm', !bookingActive);
+        }
+
+        btnBookingMode.addEventListener('click', () => setMode('booking'));
+        btnTransferMode.addEventListener('click', () => setMode('transfer'));
+
+        const transferFields = {
+            transferType: document.getElementById('transferType'),
+            transferAirport: document.getElementById('transferAirport'),
+            transferDate: document.getElementById('transferDate'),
+            transferFlight: document.getElementById('transferFlight'),
+            transferTime: document.getElementById('transferTime'),
+            transferStartTime: document.getElementById('transferStartTime'),
+            transferEndTime: document.getElementById('transferEndTime'),
+            transferDuration: document.getElementById('transferDuration'),
+            transferRoute: document.getElementById('transferRoute'),
+            transferVehicle: document.getElementById('transferVehicle'),
+            transferName: document.getElementById('transferName'),
+            transferPeople: document.getElementById('transferPeople'),
+            transferPickup: document.getElementById('transferPickup'),
+            transferDropoff: document.getElementById('transferDropoff')
+        };
+
+        const transferDoc = {
+            transferDocType: document.getElementById('transferDocType'),
+            transferDocAirport: document.getElementById('transferDocAirport'),
+            transferDocDate: document.getElementById('transferDocDate'),
+            transferDocDuration: document.getElementById('transferDocDuration'),
+            transferDocFlight: document.getElementById('transferDocFlight'),
+            transferDocTime: document.getElementById('transferDocTime'),
+            transferDocStartTime: document.getElementById('transferDocStartTime'),
+            transferDocEndTime: document.getElementById('transferDocEndTime'),
+            transferDocRoute: document.getElementById('transferDocRoute'),
+            transferDocVehicle: document.getElementById('transferDocVehicle'),
+            transferDocName: document.getElementById('transferDocName'),
+            transferDocPeople: document.getElementById('transferDocPeople'),
+            transferDocPickup: document.getElementById('transferDocPickup'),
+            transferDocDropoff: document.getElementById('transferDocDropoff')
+        };
+
+        function syncTransferPreview() {
+            const isCharter = transferFields.transferType.value === '包车 Charter';
+            const isAirport = transferFields.transferType.value === '接机 Airport Pickup' || transferFields.transferType.value === '送机 Airport Drop-off';
+            Object.keys(transferFields).forEach((key) => {
+                const outputKey = key.replace('transfer', 'transferDoc');
+                if (transferDoc[outputKey]) {
+                    let value = key === 'transferVehicle' && transferFields[key].value === 'custom'
+                        ? document.getElementById('transferVehicleCustom').value
+                        : transferFields[key].value;
+                    if (key === 'transferDuration' && value) {
+                        value = `${value}小时 / ${value} Hours`;
+                    }
+                    transferDoc[outputKey].innerText = value || '';
+                }
+            });
+            document.getElementById('transferAirportField').classList.toggle('hidden', !isAirport);
+            document.getElementById('transferFlightField').classList.toggle('hidden', !isAirport);
+            document.getElementById('transferTimeField').classList.toggle('hidden', isCharter);
+            document.getElementById('charterTimeFields').classList.toggle('hidden', !isCharter);
+            document.getElementById('transferDocAirportRow').classList.toggle('hidden', !isAirport);
+            document.getElementById('transferDocDurationRow').classList.toggle('hidden', !isCharter);
+            document.getElementById('transferDocFlightRow').classList.toggle('hidden', !isAirport);
+            document.getElementById('transferDocTimeRow').classList.toggle('hidden', !isAirport);
+            document.getElementById('transferDocCharterStartRow').classList.toggle('hidden', !isCharter);
+            document.getElementById('transferDocCharterEndRow').classList.toggle('hidden', !isCharter);
+            document.getElementById('transferDocRouteRow').classList.toggle('hidden', !isCharter);
+        }
+
+        transferFields.transferVehicle.addEventListener('change', () => {
+            const customVehicle = document.getElementById('transferVehicleCustom');
+            const isCustom = transferFields.transferVehicle.value === 'custom';
+            customVehicle.classList.toggle('hidden', !isCustom);
+            if (isCustom) customVehicle.focus();
+            syncTransferPreview();
+        });
+        document.getElementById('transferVehicleCustom').addEventListener('input', syncTransferPreview);
+
+        Object.values(transferFields).forEach((inputElement) => {
+            inputElement.addEventListener('input', syncTransferPreview);
+            inputElement.addEventListener('change', syncTransferPreview);
+        });
+
+        function autoFillCharterEndTime() {
+            const startTime = transferFields.transferStartTime.value;
+            const duration = Number(transferFields.transferDuration.value);
+            if (!startTime || !duration) return;
+            const [hours, minutes] = startTime.split(':').map(Number);
+            const end = new Date(2000, 0, 1, hours, minutes);
+            end.setHours(end.getHours() + duration);
+            transferFields.transferEndTime.value = `${String(end.getHours()).padStart(2, '0')}:${String(end.getMinutes()).padStart(2, '0')}`;
+            syncTransferPreview();
+        }
+
+        transferFields.transferStartTime.addEventListener('change', autoFillCharterEndTime);
+        transferFields.transferDuration.addEventListener('change', autoFillCharterEndTime);
+        syncTransferPreview();
+
         // 统一页面元素引用
         const fields = {
             inputCompanyName: document.getElementById('inputCompanyName'),
@@ -739,11 +1115,24 @@
 
         // 双通道生成控制器
         async function runImageCapture(includePrecautions) {
-            const docElement = document.getElementById('confirmationDoc');
+            const isTransferMode = !transferModePanel.classList.contains('hidden');
+            const docElement = document.getElementById(isTransferMode ? 'transferPreviewPanel' : 'confirmationDoc');
             const precautionsSection = document.getElementById('precautionsSection');
+            const transferPrecautionsSection = document.getElementById('transferPrecautionsSection');
+            const pointToPointPrecautionsSection = document.getElementById('pointToPointPrecautionsSection');
+            const charterPrecautionsSection = document.getElementById('charterPrecautionsSection');
 
             // 1. 根据通道选择，显示或隐藏底部的注意事项模块
-            if (includePrecautions) {
+            if (isTransferMode) {
+                const transferType = transferFields.transferType.value;
+                const isAirportTransfer = transferType === '接机 Airport Pickup' || transferType === '送机 Airport Drop-off';
+                const isPointToPoint = transferType === '点对点用车 Point-to-point';
+                const isCharter = transferType === '包车 Charter';
+                transferPrecautionsSection.style.display = includePrecautions && isAirportTransfer ? 'block' : 'none';
+                pointToPointPrecautionsSection.style.display = includePrecautions && isPointToPoint ? 'block' : 'none';
+                charterPrecautionsSection.style.display = includePrecautions && isCharter ? 'block' : 'none';
+                modalTitle.innerHTML = `<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span><span>Airport Transfer 接送机图片已生成</span>`;
+            } else if (includePrecautions) {
                 precautionsSection.style.display = 'block';
                 modalTitle.innerHTML = `<span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500"></span><span>Customer Copy 客户带温馨提示已生成</span>`;
             } else {
@@ -762,6 +1151,18 @@
             clone.style.transformOrigin = 'top left';
             clone.style.boxSizing = 'border-box';
             clone.style.display = 'block';
+
+            // 供应商版接送机图片：右侧内容只保留英文/数字，客户版保留中英双语
+            if (isTransferMode && !includePrecautions) {
+                clone.querySelectorAll('td').forEach((cell) => {
+                    cell.innerText = cell.innerText
+                        .split(/\s*\/\s*/)[0]
+                        .replace(/[\u4e00-\u9fff]+/g, '')
+                        .replace(/\(\s*\)/g, '')
+                        .replace(/\s{2,}/g, ' ')
+                        .trim();
+                });
+            }
             
             document.body.appendChild(clone);
 
@@ -802,7 +1203,10 @@
             } finally {
                 // 卸载沙盒节点，复原视图状态
                 document.body.removeChild(clone);
-                precautionsSection.style.display = 'block';
+                if (precautionsSection) precautionsSection.style.display = 'block';
+                if (transferPrecautionsSection) transferPrecautionsSection.style.display = 'none';
+                if (pointToPointPrecautionsSection) pointToPointPrecautionsSection.style.display = 'none';
+                if (charterPrecautionsSection) charterPrecautionsSection.style.display = 'none';
             }
         }
 
@@ -831,9 +1235,10 @@
         // 直接下载
         document.getElementById('btnDownload').addEventListener('click', () => {
             if (!lastCreatedImage) return;
-            const guestName = fields.inputGuestName.value || 'GUEST';
-            const dateStr = fields.inputDate.value || 'DATE';
-            const filename = `Booking_Confirmation_${guestName}_${dateStr}.png`;
+            const isTransferMode = !transferModePanel.classList.contains('hidden');
+            const filename = isTransferMode
+                ? `Airport_Transfer_${transferFields.transferName.value || 'GUEST'}_${transferFields.transferDate.value || 'DATE'}.png`
+                : `Booking_Confirmation_${fields.inputGuestName.value || 'GUEST'}_${fields.inputDate.value || 'DATE'}.png`;
 
             try {
                 if (lastBlobData) {
